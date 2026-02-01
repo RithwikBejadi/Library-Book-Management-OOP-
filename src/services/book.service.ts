@@ -28,7 +28,32 @@ class BookService {
       query.available = filters.available === 'true';
     }
     
-    return await BookModel.find(query);
+    // Pagination
+    const page = Number(filters?.page) || 1;
+    const limit = Number(filters?.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Sorting
+    const sortBy = filters?.sortBy || 'createdAt';
+    const order = filters?.order === 'asc' ? 1 : -1;
+    const sort: any = { [sortBy]: order };
+    
+    const books = await BookModel.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+    
+    const total = await BookModel.countDocuments(query);
+    
+    return {
+      books,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
   }
 
   public async getBookById(id: string) {

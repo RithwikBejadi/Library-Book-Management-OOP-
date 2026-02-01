@@ -6,17 +6,21 @@ class BookController {
 
   public getBooks = async (req: Request, res: Response) => {
     try {
-      const { search, genre, publishedYear, available } = req.query;
+      const { search, genre, publishedYear, available, page, limit, sortBy, order } = req.query;
       
       const filters = {
         search,
         genre,
         publishedYear,
-        available
+        available,
+        page,
+        limit,
+        sortBy,
+        order
       };
       
-      const books = await this.bookService.getAllBooks(filters);
-      return res.status(200).json(books);
+      const result = await this.bookService.getAllBooks(filters);
+      return res.status(200).json(result);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Failed to fetch books" });
