@@ -11,6 +11,25 @@ const bookSchema = new Schema({
         type: String,
         required: true,
         trim: true
+    },
+    isbn: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    publishedYear: {
+        type: Number,
+        required: true
+    },
+    genre: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    available: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true
