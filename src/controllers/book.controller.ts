@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import BookService from "../services/book.service";
+import { NotFoundError } from "../utils/errors";
 
 class BookController {
   private bookService = new BookService();
 
-  public getBooks = async (req: Request, res: Response) => {
+  public getBooks = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { search, genre, publishedYear, available, page, limit, sortBy, order } = req.query;
       
@@ -22,12 +23,11 @@ class BookController {
       const result = await this.bookService.getAllBooks(filters);
       return res.status(200).json(result);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Failed to fetch books" });
+      next(err);
     }
   };
 
-  public createBook = async (req: Request, res: Response) => {
+  public createBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { title, author, isbn, publishedYear, genre, available } = req.body;
 
@@ -41,28 +41,26 @@ class BookController {
       });
       return res.status(201).json(book);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Failed to create book" });
+      next(err);
     }
   };
 
-  public getBookById = async (req: Request, res: Response) => {
+  public getBookById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const book = await this.bookService.getBookById(id);
       
       if (!book) {
-        return res.status(404).json({ message: "Book not found" });
+        throw new NotFoundError("Book not found");
       }
       
       return res.status(200).json(book);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Failed to fetch book" });
+      next(err);
     }
   };
 
-  public updateBook = async (req: Request, res: Response) => {
+  public updateBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -70,29 +68,27 @@ class BookController {
       const book = await this.bookService.updateBook(id, updateData);
       
       if (!book) {
-        return res.status(404).json({ message: "Book not found" });
+        throw new NotFoundError("Book not found");
       }
       
       return res.status(200).json(book);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Failed to update book" });
+      next(err);
     }
   };
 
-  public deleteBook = async (req: Request, res: Response) => {
+  public deleteBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const book = await this.bookService.deleteBook(id);
       
       if (!book) {
-        return res.status(404).json({ message: "Book not found" });
+        throw new NotFoundError("Book not found");
       }
       
       return res.status(200).json({ message: "Book deleted successfully" });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Failed to delete book" });
+      next(err);
     }
   };
 }
