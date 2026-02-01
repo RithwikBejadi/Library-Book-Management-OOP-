@@ -31,36 +31,6 @@ class BookController {
     try {
       const { title, author, isbn, publishedYear, genre, available } = req.body;
 
-      if (!title || typeof title !== "string") {
-        return res
-          .status(400)
-          .json({ message: "title is required and must be a string" });
-      }
-
-      if (!author || typeof author !== "string") {
-        return res
-          .status(400)
-          .json({ message: "author is required and must be a string" });
-      }
-
-      if (!isbn || typeof isbn !== "string") {
-        return res
-          .status(400)
-          .json({ message: "isbn is required and must be a string" });
-      }
-
-      if (!publishedYear || typeof publishedYear !== "number") {
-        return res
-          .status(400)
-          .json({ message: "publishedYear is required and must be a number" });
-      }
-
-      if (!genre || typeof genre !== "string") {
-        return res
-          .status(400)
-          .json({ message: "genre is required and must be a string" });
-      }
-
       const book = await this.bookService.createBook({
         title,
         author,
